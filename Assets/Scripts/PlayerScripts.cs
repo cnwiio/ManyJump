@@ -1,4 +1,6 @@
+using System;
 using NUnit.Framework.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerScripts : MonoBehaviour
@@ -9,6 +11,11 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float speed = 2f;
     [SerializeField] private float MaxFallSpeed = 10f;
+
+    private float dir;
+
+    private Vector3 leftSide;
+    private Vector3 rightSide;
 
     void Awake()
     {
@@ -26,24 +33,24 @@ public class PlayerScripts : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
+        rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
     }
     
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //Jump();
-        }
+        // Direction cal
+        dir = Math.Clamp(Input.acceleration.x, -1, 1);
     }
 
     private void FixedUpdate()
     {
-        HorizontalMove();
         ClampFallSpeed();
-        HandleOffScreen();
+        HorizontalMove();
     }
 
+    #region Movement
     public void Jump()
     {
         if (rb.linearVelocityY > 0) return;
@@ -58,22 +65,22 @@ public class PlayerScripts : MonoBehaviour
 
     private void HorizontalMove()
     {
-        rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal") * speed, rb.linearVelocityY);
+        rb.linearVelocityX = dir * speed;
+        HandleOffScreen();
     }
-
-    [Header("Off Screen Handling")]
-    [SerializeField] float leftSide = -10f;
-    [SerializeField] float rightSide = 10f;
     private void HandleOffScreen()
     {
-        if (rb.position.x < leftSide)
+
+        if (rb.position.x < leftSide.x)
         {
-            rb.position = new Vector2(rightSide, rb.position.y);
+            rb.position = new Vector2(rightSide.x, rb.position.y);
         }
 
-        if (rb.position.x > rightSide)
+        if (rb.position.x > rightSide.x)
         {
-            rb.position = new Vector2(leftSide, rb.position.y); 
+            rb.position = new Vector2(leftSide.x, rb.position.y);
         }
     }
+
+    #endregion
 }
