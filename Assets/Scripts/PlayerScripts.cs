@@ -76,7 +76,6 @@ public class PlayerScripts : MonoBehaviour
     }
     private void HandleOffScreen()
     {
-
         if (rb.position.x < leftSide.x)
         {
             rb.position = new Vector2(rightSide.x, rb.position.y);
