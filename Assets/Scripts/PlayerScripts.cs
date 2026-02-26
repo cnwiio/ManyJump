@@ -57,6 +57,12 @@ public class PlayerScripts : MonoBehaviour
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
+    public void Jump(float BouceForce)
+    {
+        if (rb.linearVelocityY > 0) return;
+        rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
+    }
+
     private void ClampFallSpeed()
     {
         rb.linearVelocityY = Mathf.Max(rb.linearVelocityY, -MaxFallSpeed);
