@@ -54,12 +54,14 @@ public class PlayerScripts : MonoBehaviour
     public void Jump()
     {
         if (rb.linearVelocityY > 0) return;
+        rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
     public void Jump(float BouceForce)
     {
         if (rb.linearVelocityY > 0) return;
+        rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
     }
 
@@ -72,6 +74,7 @@ public class PlayerScripts : MonoBehaviour
     private void HorizontalMove()
     {
         rb.linearVelocityX = dir * speed;
+        rb.linearVelocityX = Input.GetAxis("Horizontal") * speed;
         HandleOffScreen();
     }
     private void HandleOffScreen()
