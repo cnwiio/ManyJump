@@ -12,7 +12,6 @@ public class BreakPlatform : BasePlatform
     protected override void Bounce()
     {
         base.Bounce();
-        //gameObject.SetActive(false); // Use leanPool in future
         LeanPool.Despawn(this);
     }
 }
