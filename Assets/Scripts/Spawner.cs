@@ -11,13 +11,7 @@ public class Spawner : MonoBehaviour
     void Start()
     {
         _player = PlayerScripts.Instance.gameObject;
-        Targety = -40;
-        Spawn();
-        Targety = -20;
-        Spawn();
-        Targety = 0;
-        Spawn();
-        Targety = 20;
+        StartSpawn();
     }
 
     // Update is called once per frame
@@ -26,7 +20,7 @@ public class Spawner : MonoBehaviour
         if (_player.transform.position.y > Targety)
         {
             Spawn();
-            Targety += offset.y;
+            
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -37,17 +31,33 @@ public class Spawner : MonoBehaviour
 
     private Vector3 RandomPos;
     private int randomIndex;
+    private int previousHeight = 0;
     void Spawn()
     {
         randomIndex = Random.Range(0, _presetLists.Length);
         //Debug.Log(randomIndex);
-        RandomPos = new Vector3(/*Random.Range(-2f, 2f)*/0f, Targety + offset.y, 0f);
+        RandomPos = new Vector3(/*Random.Range(-2f, 2f)*/0f, Targety + previousHeight, 0f);
 
+        //Debug.Log("Currect i : " + i + 
+        //    "\nChild Type : " + _presetLists[randomIndex].ChildType.Length +
+        //    "\nChildPos : " + _presetLists[randomIndex].ChildPos.Length + 
+        //    "\nChild Cout : " + _presetLists[randomIndex].transform.childCount);
         for (int i = 0; i < _presetLists[randomIndex].transform.childCount; i++)
         {
             LeanPool.Spawn(_presetLists[randomIndex].ChildType[i],
                 _presetLists[randomIndex].ChildPos[i].localPosition + RandomPos,
                 Quaternion.identity);
         }
+
+        previousHeight = (int)_presetLists[randomIndex].Hieght;
+        Targety += _presetLists[randomIndex].Hieght;
+    }
+
+    void StartSpawn()
+    {
+        Targety = -10;
+        Spawn();
+        Targety = -10;
+        Spawn();
     }
 }

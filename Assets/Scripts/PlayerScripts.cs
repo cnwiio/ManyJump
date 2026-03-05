@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using NUnit.Framework.Interfaces;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -16,6 +17,11 @@ public class PlayerScripts : MonoBehaviour
 
     private Vector3 leftSide;
     private Vector3 rightSide;
+
+    private float loseOffset = 10f;
+    private float loseYPos;
+
+    private bool IsDead;
 
     void Awake()
     {
@@ -35,11 +41,13 @@ public class PlayerScripts : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
+        loseYPos = transform.position.y - loseOffset;
     }
     
     // Update is called once per frame
     void Update()
     {
+        if (IsDead) return;
         // Direction cal
         dir = Math.Clamp(Input.acceleration.x, -1, 1);
     }
@@ -48,6 +56,7 @@ public class PlayerScripts : MonoBehaviour
     {
         ClampFallSpeed();
         HorizontalMove();
+        CheckFall();
     }
 
     #region Movement
@@ -91,4 +100,20 @@ public class PlayerScripts : MonoBehaviour
     }
 
     #endregion
+
+    private void CheckFall()
+    {
+        if (IsDead) return;
+
+        if (transform.position.y < loseYPos)
+        {
+            Debug.Log("You Lose!");
+            IsDead = true;
+        }
+
+        if (rb.linearVelocityY > 0)
+        {
+            loseYPos = transform.position.y - loseOffset;
+        }
+    }
 }
