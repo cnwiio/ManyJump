@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Lean.Pool;
 using NUnit.Framework.Interfaces;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class PlayerScripts : MonoBehaviour
     private float loseYPos;
 
     private bool IsDead;
+    public event Action OnDeath;
 
     void Awake()
     {
@@ -108,7 +110,7 @@ public class PlayerScripts : MonoBehaviour
         if (transform.position.y < loseYPos)
         {
             Debug.Log("You Lose!");
-            IsDead = true;
+            Die();
         }
 
         if (rb.linearVelocityY > 0)
@@ -116,4 +118,25 @@ public class PlayerScripts : MonoBehaviour
             loseYPos = transform.position.y - loseOffset;
         }
     }
+
+    #region Die
+    public void Die()
+    {
+        IsDead = true;
+        OnDeath?.Invoke();
+    }
+
+    public void DieAndDisappear()
+    {
+
+    }
+
+    public void Restart()
+    {
+        IsDead = false;
+        transform.position = Vector3.zero;
+        rb.linearVelocity = Vector2.zero;
+        loseYPos = transform.position.y - loseOffset;
+    }
+    #endregion
 }

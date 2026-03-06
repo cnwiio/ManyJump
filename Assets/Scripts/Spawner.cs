@@ -4,13 +4,13 @@ using Lean.Pool;
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private Preset[] _presetLists;
-    [SerializeField] private Vector3 offset;
     private GameObject _player;
     private float Targety;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _player = PlayerScripts.Instance.gameObject;
+        GameManager.Instance.RestartEvent += Restart;
         StartSpawn();
     }
 
@@ -29,6 +29,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    #region Spawn
     private Vector3 RandomPos;
     private int randomIndex;
     private int previousHeight = 0;
@@ -59,5 +60,15 @@ public class Spawner : MonoBehaviour
         Spawn();
         Targety = -10;
         Spawn();
+    }
+    #endregion
+    private void Restart()
+    {
+        previousHeight = 0;
+        StartSpawn();
+    }
+    private void OnDestroy()
+    {
+        GameManager.Instance.RestartEvent -= StartSpawn;
     }
 }
