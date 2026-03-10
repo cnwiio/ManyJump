@@ -14,6 +14,9 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float MaxFallSpeed = 10f;
 
+    [SerializeField] private AudioClip jumpSound;
+    [SerializeField] private AudioClip deathSound;
+
     private float dir;
 
     private Vector3 leftSide;
@@ -30,7 +33,7 @@ public class PlayerScripts : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -67,6 +70,8 @@ public class PlayerScripts : MonoBehaviour
         if (rb.linearVelocityY > 0) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+        AudioManager.Instance.PlaySFX(jumpSound);
     }
 
     public void Jump(float BouceForce)
@@ -74,7 +79,10 @@ public class PlayerScripts : MonoBehaviour
         if (rb.linearVelocityY > 0) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
+
+        AudioManager.Instance.PlaySFX(jumpSound);
     }
+
 
     private void ClampFallSpeed()
     {
@@ -110,6 +118,7 @@ public class PlayerScripts : MonoBehaviour
         if (transform.position.y < loseYPos)
         {
             Debug.Log("You Lose!");
+            AudioManager.Instance.PlaySFX(deathSound);
             Die();
         }
 
