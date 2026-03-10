@@ -29,7 +29,7 @@ public class BaseMonster : MonoBehaviour, IPoolable
 
     public virtual void Kill()
     {
-        PlayerScripts.Instance.Die();
+        PlayerScripts.Instance.HitEnemy();
     }
 
     public virtual void Die()

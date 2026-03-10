@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Lean.Pool;
 using NUnit.Framework.Interfaces;
@@ -25,6 +26,21 @@ public class PlayerScripts : MonoBehaviour
     private bool IsDead;
     public event Action OnDeath;
 
+    // PowerUp
+    private bool isFlying = false;
+    private float initialGravityScale;
+    private bool _hasShield = false;
+    private bool hasShield
+    {
+        get => _hasShield;
+        set
+        {
+            _hasShield = value;
+            shieldVisual.SetActive(value);
+        }
+    }
+    [SerializeField] private GameObject shieldVisual;
+
     void Awake()
     {
         if (Instance == null)
@@ -44,6 +60,7 @@ public class PlayerScripts : MonoBehaviour
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
         loseYPos = transform.position.y - loseOffset;
+        initialGravityScale = rb.gravityScale;
     }
     
     // Update is called once per frame
@@ -119,6 +136,38 @@ public class PlayerScripts : MonoBehaviour
         }
     }
 
+    #region PowerUp
+
+
+    public void ApplyFly(float flyDuration, float flySpeed)
+    {
+        isFlying = true;
+        StartCoroutine(FlyCouroutine(flyDuration, flySpeed));
+    }
+
+    private IEnumerator FlyCouroutine(float duration, float speed)
+    {
+        rb.linearVelocityY = 0f;
+        rb.gravityScale = 0f;
+        rb.linearVelocityY = speed;
+        yield return new WaitForSeconds(duration);
+        rb.gravityScale = initialGravityScale;
+    }
+
+    public void ApplyShield(float duration)
+    {
+        hasShield = true;
+        StartCoroutine(ShieldCoroutine(duration)); // Example duration for the shield
+    }
+
+    private IEnumerator ShieldCoroutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        hasShield = false;
+    }
+
+    #endregion
+
     #region Die
     public void Die()
     {
@@ -126,9 +175,14 @@ public class PlayerScripts : MonoBehaviour
         OnDeath?.Invoke();
     }
 
-    public void DieAndDisappear()
+    public void HitEnemy()
     {
-
+        if (hasShield)
+        {
+            hasShield = false;
+            return;
+        }
+        Die();
     }
 
     public void Restart()
