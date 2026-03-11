@@ -1,13 +1,20 @@
 using System;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
     public event Action RestartEvent;
 
+
     [SerializeField] private GameObject RestartCanvas;
+    [SerializeField] private GameObject PauseCanvas;
+
+    private bool isPaused;
 
     private void Awake()
     {
@@ -26,6 +33,11 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PlayerScripts.Instance.OnDeath += Lose;
+
+        if (PauseCanvas != null)
+        {
+            PauseCanvas.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -33,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         //if(PlayerScripts.Instance.transform.position.y < LoseYpos)
         //{
-            
+
         //}
     }
 
@@ -44,16 +56,51 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        AudioManager.Instance.PlayClick();
+
+        Time.timeScale = 1f;
+        isPaused = false;
+
         LeanPool.DespawnAll();
         PlayerScripts.Instance.Restart();
         RestartEvent?.Invoke();
 
         RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
+    }
+
+    public void PauseGame()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = true;
+        Time.timeScale = 0f;
+        PauseCanvas.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = false;
+        Time.timeScale = 1f;
+        RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
+    }
+    public void Home()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = false;
+        Time.timeScale = 1f;
+        RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
+
+        FindObjectOfType<SceneManagement>().LoadLevel(0);
     }
 
     private void OnDestroy()
     {
         PlayerScripts.Instance.OnDeath -= Lose;
     }
-
 }
