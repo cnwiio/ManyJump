@@ -17,6 +17,7 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private float MaxFallSpeed = 10f;
     [SerializeField] private bool pc = false;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     [Header("Audio")]
     [SerializeField] private AudioClip jumpSound;
@@ -29,8 +30,6 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private float flashInterval = 0.15f;
     private bool isInvincible = false;
     private Coroutine shieldRoutine;
-
-    private SpriteRenderer sprite;
 
     private float dir;
 
@@ -79,10 +78,10 @@ public class PlayerScripts : MonoBehaviour
     }
 
     void Start()
-    {
-        sprite = GetComponent<SpriteRenderer>();
+    { 
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
         loseYPos = transform.position.y - loseOffset;
@@ -115,6 +114,7 @@ public class PlayerScripts : MonoBehaviour
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
+        animator.SetTrigger("Jump");
         AudioManager.Instance.PlaySFX(jumpSound);
     }
 
@@ -126,6 +126,7 @@ public class PlayerScripts : MonoBehaviour
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
 
+        animator.SetTrigger("Jump");
         AudioManager.Instance.PlaySFX(jumpSound);
     }
 
@@ -147,10 +148,11 @@ public class PlayerScripts : MonoBehaviour
 
     private void FlipSprite()
     {
-        if (rb.linearVelocityX >= 0)
+        if (rb.linearVelocityX > 0)
         {
             spriteRenderer.flipX = false;
-        } else
+        } 
+        else if (rb.linearVelocityX < 0)
         {
             spriteRenderer.flipX = true;
         }
@@ -207,7 +209,6 @@ public class PlayerScripts : MonoBehaviour
         {
             Winning();
         }
-        
     }
 
     private void Winning()
@@ -227,12 +228,12 @@ public class PlayerScripts : MonoBehaviour
 
         while (timer < duration)
         {
-            sprite.enabled = !sprite.enabled;
+            spriteRenderer.enabled = !spriteRenderer.enabled;
             yield return new WaitForSeconds(flashInterval);
             timer += flashInterval;
         }
 
-        sprite.enabled = true;
+        spriteRenderer.enabled = true;
         isInvincible = false;
     }
 
@@ -256,9 +257,9 @@ public class PlayerScripts : MonoBehaviour
     }
 
     public void ApplyShield(float duration)
+    { 
         if (IsDeadOrWin()) return;
         if (IsHavePowerUp()) return;
-        if (IsDead) return;
         hasShield = true;
 
         shieldRoutine = StartCoroutine(ShieldCoroutine(duration));
@@ -292,24 +293,25 @@ public class PlayerScripts : MonoBehaviour
     {
         if (IsDeadOrWin()) return;
         OnCollectStar?.Invoke();
+        AudioManager.Instance.PlaySFX(collectStarSound);
     }
 
     #endregion
 
     #region Die
     public void Die()
+    { 
         AudioManager.Instance.PlaySFX(deathSound);
         isDead = true;
-        IsDead = true;
         OnDeath?.Invoke();
     }
 
-    public void HitEnemy()
+    public void HitEnemy() { 
         if (isInvincible) return;
 
         if (IsDeadOrWin()) return;
         if (isFlying || isSuperJump) return;
-    {
+    
         if (hasShield)
         {
             hasShield = false;
