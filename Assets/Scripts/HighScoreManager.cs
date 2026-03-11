@@ -1,42 +1,45 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HighScoreManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI[] highestScoreText;
     [SerializeField] private TextMeshProUGUI[] highestTimeText;
+    [SerializeField] private Button[] levelButton;
     [SerializeField] private string noTimeScoreText;
 
     private void Start()
     {
         LoadHighScores();
+        LoadButtonLevel();
     }
 
     float highScore;
     int starScore;
     private void LoadHighScores()
     {
-        for (int i = 0 /*change to 1 later*/; i < highestScoreText.Length /* +1 later*/; i++)
+        for (int i = 1; i <= highestScoreText.Length; i++)
         {
             if (PlayerPrefs.HasKey("BestTime_" + i))
             {
                 highScore = PlayerPrefs.GetFloat("BestTime_" + i);
-                highestTimeText[i].text = FormatTime(highScore);
+                highestTimeText[i-1].text = FormatTime(highScore);
             }
             else
             {
-                highestTimeText[i].text = noTimeScoreText;
+                highestTimeText[i-1].text = noTimeScoreText;
             }
 
             if (PlayerPrefs.HasKey("BestScore_" + i))
             {
                 starScore = PlayerPrefs.GetInt("BestScore_" + i);
-                highestScoreText[i].text = string.Format("{0}/10", starScore);
+                highestScoreText[i-1].text = string.Format("{0}/10", starScore);
             }
             else
             {
-                highestScoreText[i].text = "0/10";
+                highestScoreText[i-1].text = "0/10";
             }
         }
     }
@@ -52,5 +55,26 @@ public class HighScoreManager : MonoBehaviour
         // 3. จัดรูปแบบ String (00:00:00)
         // :D2 คือการบังคับให้มีเลข 2 หลักเสมอ
         return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliSeconds);
+    }
+
+    int currentLvl;
+    private void LoadButtonLevel()
+    {
+        if (PlayerPrefs.HasKey("CurrentStage"))
+        {
+            currentLvl = PlayerPrefs.GetInt("CurrentStage");
+        } else
+        {
+            currentLvl = 1;
+        }
+
+        for (int i = 0; i < levelButton.Length; i++)
+        {
+            if (i + 1 > currentLvl)
+            {
+                Debug.Log((i + 1) + " is lessthan" + currentLvl);
+                levelButton[i].interactable = false;
+            }
+        }
     }
 }

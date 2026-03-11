@@ -12,14 +12,20 @@ public abstract class BasePowerUp : MonoBehaviour, IPoolable
 
         if (collision.CompareTag("Player"))
         {
+            if (PlayerScripts.Instance.IsHavePowerUp()) return;
             ApplyPowerUp();
-            LeanPool.Despawn(gameObject);
+            Die();
         }
     }
 
     protected virtual void ApplyPowerUp()
     {
         // This method should be overridden by derived classes to implement specific power-up behavior.
+    }
+
+    protected virtual void Die()
+    {
+        LeanPool.Despawn(gameObject);
     }
 
     public void OnSpawn()

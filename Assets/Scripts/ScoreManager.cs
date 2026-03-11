@@ -19,9 +19,10 @@ public class ScoreManager : MonoBehaviour
         PlayerScripts.Instance.OnDeath += StopCounter; // รีเซ็ตเวลาเมื่อผู้เล่นตาย
         PlayerScripts.Instance.OnCollectStar += AddStar; // เพิ่มดาวเมื่อเก็บดาวได้
         GameManager.Instance.RestartEvent += RestartCounter; // รีเซ็ตเวลาเมื่อเกมรีสตาร์ท
+        GameManager.Instance.WinEvent += CompleteStage;
 
         currentScenePrefName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        Debug.Log(currentScenePrefName);
+        //Debug.Log(currentScenePrefName);
         //currentScenePrefName = "0";
         bestTimePrefName = "BestTime_" + currentScenePrefName;
         bestScorePrefName = "BestScore_" + currentScenePrefName;
@@ -101,8 +102,6 @@ public class ScoreManager : MonoBehaviour
         {
             PlayerPrefs.SetFloat(bestTimePrefName, elapsedTime);
         }
-
-
     }
 
     private void SaveStarScore()
@@ -127,5 +126,6 @@ public class ScoreManager : MonoBehaviour
         PlayerScripts.Instance.OnDeath -= StopCounter; // ยกเลิกการสมัครเมื่อไม่ใช้งาน
         PlayerScripts.Instance.OnCollectStar -= AddStar; // ยกเลิกการสมัครเมื่อไม่ใช้งาน
         GameManager.Instance.RestartEvent -= RestartCounter; // ยกเลิกการสมัครเมื่อไม่ใช้งาน
+        GameManager.Instance.WinEvent -= CompleteStage;
     }
 }

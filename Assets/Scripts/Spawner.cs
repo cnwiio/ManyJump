@@ -33,11 +33,6 @@ public class Spawner : MonoBehaviour
             AddMonAndPowerPresets();
             _hasAddedMonAndPower = true;
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Spawn();
-        }
     }
 
     #region Spawn

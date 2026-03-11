@@ -9,6 +9,7 @@ TagManager:
   - Destroyer
   - Enemy
   - Star
+  - Win
   layers:
   - Default
   - TransparentFX

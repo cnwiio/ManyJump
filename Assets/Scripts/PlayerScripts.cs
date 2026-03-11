@@ -15,6 +15,8 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float horizontalSpeed = 2f;
     [SerializeField] private float MaxFallSpeed = 10f;
+    [SerializeField] private bool pc = false;
+    private SpriteRenderer spriteRenderer;
 
     [Header("Audio")]
     [SerializeField] private AudioClip jumpSound;
@@ -28,13 +30,15 @@ public class PlayerScripts : MonoBehaviour
     private float loseOffset = 10f;
     private float loseYPos;
 
-    private bool IsDead;
+    private bool isDead;
+    private bool isWin;
     public event Action OnDeath;
 
-    private bool isFlying = false;
+    public bool isFlying = false;
+    private bool isSuperJump = false;
     private float initialGravityScale;
     private bool _hasShield = false;
-    private bool hasShield
+    public bool hasShield
     {
         get => _hasShield;
         set
@@ -47,6 +51,8 @@ public class PlayerScripts : MonoBehaviour
     [SerializeField] private GameObject shieldVisual;
 
     public event Action OnCollectStar;
+
+    public event Action OnTouchWin;
 
 
     void Awake()
@@ -65,6 +71,7 @@ public class PlayerScripts : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
         loseYPos = transform.position.y - loseOffset;
@@ -74,7 +81,8 @@ public class PlayerScripts : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
+
         // Direction cal
         dir = Math.Clamp(Input.acceleration.x, -1, 1);
     }
@@ -84,12 +92,15 @@ public class PlayerScripts : MonoBehaviour
         ClampFallSpeed();
         HorizontalMove();
         CheckFall();
+        CheckSuperJump();
     }
 
     #region Movement
     public void Jump()
     {
-        if (rb.linearVelocityY > 0 || IsDead) return;
+        if (IsDeadOrWin()) return;
+
+        if (rb.linearVelocityY > 0) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
@@ -98,7 +109,9 @@ public class PlayerScripts : MonoBehaviour
 
     public void Jump(float BouceForce)
     {
-        if (rb.linearVelocityY > 0 || IsDead) return;
+        if (IsDeadOrWin()) return;
+
+        if (rb.linearVelocityY > 0 ) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
 
@@ -114,11 +127,24 @@ public class PlayerScripts : MonoBehaviour
 
     private void HorizontalMove()
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
         rb.linearVelocityX = dir * horizontalSpeed;
-        rb.linearVelocityX = Input.GetAxis("Horizontal") * horizontalSpeed;
+        if (pc) rb.linearVelocityX = Input.GetAxis("Horizontal") * horizontalSpeed;
+        FlipSprite();
         HandleOffScreen();
     }
+
+    private void FlipSprite()
+    {
+        if (rb.linearVelocityX >= 0)
+        {
+            spriteRenderer.flipX = false;
+        } else
+        {
+            spriteRenderer.flipX = true;
+        }
+    }
+
     private void HandleOffScreen()
     {
         if (rb.position.x < leftSide.x)
@@ -132,15 +158,25 @@ public class PlayerScripts : MonoBehaviour
         }
     }
 
+    private void CheckSuperJump()
+    {
+        if (rb.linearVelocityY > jumpForce)
+        {
+            isSuperJump = true;
+        } else
+        {
+            isSuperJump = false;
+        }
+    }
+
     #endregion
 
     private void CheckFall()
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
 
         if (transform.position.y < loseYPos)
         {
-            Debug.Log("You Lose!");
             AudioManager.Instance.PlaySFX(deathSound);
             Die();
         }
@@ -151,12 +187,31 @@ public class PlayerScripts : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (IsDeadOrWin()) return;
+
+        if (collision.CompareTag("Win"))
+        {
+            Winning();
+        }
+        
+    }
+
+    private void Winning()
+    {
+        OnTouchWin?.Invoke();
+        isWin = true;
+        //rb.linearVelocityY = 0;
+    }
+
     #region PowerUp
 
 
     public void ApplyFly(float flyDuration, float flySpeed)
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
+        if (IsHavePowerUp()) return;
         isFlying = true;
         StartCoroutine(FlyCouroutine(flyDuration, flySpeed));
     }
@@ -173,7 +228,8 @@ public class PlayerScripts : MonoBehaviour
 
     public void ApplyShield(float duration)
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
+        if (IsHavePowerUp()) return;
         hasShield = true;
         StartCoroutine(ShieldCoroutine(duration)); 
     }
@@ -184,13 +240,18 @@ public class PlayerScripts : MonoBehaviour
         hasShield = false;
     }
 
+    public bool IsHavePowerUp()
+    {
+        return hasShield || isSuperJump || isFlying;
+    }
+
     #endregion
 
     #region Score
 
     public void CollectStar()
     {
-        if (IsDead) return;
+        if (IsDeadOrWin()) return;
         OnCollectStar?.Invoke();
     }
 
@@ -199,12 +260,14 @@ public class PlayerScripts : MonoBehaviour
     #region Die
     public void Die()
     {
-        IsDead = true;
+        isDead = true;
         OnDeath?.Invoke();
     }
 
     public void HitEnemy()
     {
+        if (IsDeadOrWin()) return;
+        if (isFlying || isSuperJump) return;
         if (hasShield)
         {
             hasShield = false;
@@ -215,10 +278,19 @@ public class PlayerScripts : MonoBehaviour
 
     public void Restart()
     {
-        IsDead = false;
+        isDead = false;
+        isFlying = false;
+        isWin = false;
+        isSuperJump = false;
+        hasShield = false;
         transform.position = Vector3.zero;
         rb.linearVelocity = Vector2.zero;
         loseYPos = transform.position.y - loseOffset;
+    }
+
+    public bool IsDeadOrWin()
+    {
+        return isDead || isWin;
     }
     #endregion
 }
