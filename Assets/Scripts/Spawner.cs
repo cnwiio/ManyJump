@@ -1,11 +1,16 @@
-using UnityEngine;
+using System.Collections.Generic;
 using Lean.Pool;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Preset[] _presetLists;
+    [SerializeField] private List<Preset> _presetLists;
+    [SerializeField] private Preset[] _MonAndPowerPresetLists;
     private GameObject _player;
     private float Targety;
+    [SerializeField] private float diffucultChangeTargetY;
+    private bool _hasAddedMonAndPower = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,6 +28,12 @@ public class Spawner : MonoBehaviour
             
         }
 
+        if (_player.transform.position.y > diffucultChangeTargetY && !_hasAddedMonAndPower)
+        {
+            AddMonAndPowerPresets();
+            _hasAddedMonAndPower = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Spawn();
@@ -35,7 +46,7 @@ public class Spawner : MonoBehaviour
     private int previousHeight = 0;
     void Spawn()
     {
-        randomIndex = Random.Range(0, _presetLists.Length);
+        randomIndex = Random.Range(0, _presetLists.Count);
         //Debug.Log(randomIndex);
         RandomPos = new Vector3(/*Random.Range(-2f, 2f)*/0f, Targety + previousHeight, 0f);
 
@@ -61,14 +72,23 @@ public class Spawner : MonoBehaviour
         Targety = -10;
         Spawn();
     }
+
+    void AddMonAndPowerPresets()
+    {
+        if (_hasAddedMonAndPower) return;
+        _presetLists.AddRange(_MonAndPowerPresetLists);
+        Debug.Log(_presetLists.Count);
+    }
     #endregion
     private void Restart()
     {
         previousHeight = 0;
+        _presetLists.RemoveRange(_presetLists.Count - _MonAndPowerPresetLists.Length, _MonAndPowerPresetLists.Length);
+        _hasAddedMonAndPower = false;
         StartSpawn();
     }
     private void OnDestroy()
     {
-        GameManager.Instance.RestartEvent -= StartSpawn;
+        GameManager.Instance.RestartEvent -= Restart;
     }
 }

@@ -85,7 +85,7 @@ public class PlayerScripts : MonoBehaviour
     #region Movement
     public void Jump()
     {
-        if (rb.linearVelocityY > 0) return;
+        if (rb.linearVelocityY > 0 || IsDead) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
@@ -94,7 +94,7 @@ public class PlayerScripts : MonoBehaviour
 
     public void Jump(float BouceForce)
     {
-        if (rb.linearVelocityY > 0) return;
+        if (rb.linearVelocityY > 0 || IsDead) return;
         rb.linearVelocityY = 0f;
         rb.AddForce(Vector2.up * BouceForce, ForceMode2D.Impulse);
 
@@ -110,6 +110,7 @@ public class PlayerScripts : MonoBehaviour
 
     private void HorizontalMove()
     {
+        if (IsDead) return;
         rb.linearVelocityX = dir * horizontalSpeed;
         rb.linearVelocityX = Input.GetAxis("Horizontal") * horizontalSpeed;
         HandleOffScreen();
@@ -151,6 +152,7 @@ public class PlayerScripts : MonoBehaviour
 
     public void ApplyFly(float flyDuration, float flySpeed)
     {
+        if (IsDead) return;
         isFlying = true;
         StartCoroutine(FlyCouroutine(flyDuration, flySpeed));
     }
@@ -167,6 +169,7 @@ public class PlayerScripts : MonoBehaviour
 
     public void ApplyShield(float duration)
     {
+        if (IsDead) return;
         hasShield = true;
         StartCoroutine(ShieldCoroutine(duration)); 
     }

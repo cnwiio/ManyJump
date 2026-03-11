@@ -464,7 +464,7 @@ GameObject:
   - component: {fileID: 1667232559218107475}
   - component: {fileID: 2854613833105642098}
   m_Layer: 0
-  m_Name: Preset 1
+  m_Name: Test Preset 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
