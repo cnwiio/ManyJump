@@ -20,19 +20,21 @@ public class FakePlatform : BasePlatform
 
     protected override void Bounce()
     {
+        Debug.Log("Break called");
         animator.SetTrigger("Break");
     }
 
     public void OnAnimationEnd()
     {
+        Debug.Log("OnAnimationEnd called");
         LeanPool.Despawn(this);
     }
 
     public override void OnSpawn()
     {
-        base.OnSpawn();
         if (animator == null)
             animator = GetComponent<Animator>();
+        Debug.Log("Reset called");
         animator.SetTrigger("Reset");
     }
 }

@@ -12,9 +12,10 @@ public class PlayerScripts : MonoBehaviour
     private Rigidbody2D rb;
     [Header("Player Stats")]
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private float speed = 2f;
+    [SerializeField] private float horizontalSpeed = 2f;
     [SerializeField] private float MaxFallSpeed = 10f;
 
+    [Header("Audio")]
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip deathSound;
 
@@ -29,7 +30,6 @@ public class PlayerScripts : MonoBehaviour
     private bool IsDead;
     public event Action OnDeath;
 
-    // PowerUp
     private bool isFlying = false;
     private float initialGravityScale;
     private bool _hasShield = false;
@@ -42,6 +42,7 @@ public class PlayerScripts : MonoBehaviour
             shieldVisual.SetActive(value);
         }
     }
+    [Header("PowerUp")]
     [SerializeField] private GameObject shieldVisual;
 
     void Awake()
@@ -109,8 +110,8 @@ public class PlayerScripts : MonoBehaviour
 
     private void HorizontalMove()
     {
-        rb.linearVelocityX = dir * speed;
-        rb.linearVelocityX = Input.GetAxis("Horizontal") * speed;
+        rb.linearVelocityX = dir * horizontalSpeed;
+        rb.linearVelocityX = Input.GetAxis("Horizontal") * horizontalSpeed;
         HandleOffScreen();
     }
     private void HandleOffScreen()
@@ -161,12 +162,13 @@ public class PlayerScripts : MonoBehaviour
         rb.linearVelocityY = speed;
         yield return new WaitForSeconds(duration);
         rb.gravityScale = initialGravityScale;
+        isFlying = false;
     }
 
     public void ApplyShield(float duration)
     {
         hasShield = true;
-        StartCoroutine(ShieldCoroutine(duration)); // Example duration for the shield
+        StartCoroutine(ShieldCoroutine(duration)); 
     }
 
     private IEnumerator ShieldCoroutine(float duration)
