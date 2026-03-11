@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class PlayerScripts : MonoBehaviour
 {
+
     public static PlayerScripts Instance { get; private set; }
     private Rigidbody2D rb;
     [Header("Player Stats")]
@@ -44,6 +45,9 @@ public class PlayerScripts : MonoBehaviour
     }
     [Header("PowerUp")]
     [SerializeField] private GameObject shieldVisual;
+
+    public event Action OnCollectStar;
+
 
     void Awake()
     {
@@ -178,6 +182,16 @@ public class PlayerScripts : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         hasShield = false;
+    }
+
+    #endregion
+
+    #region Score
+
+    public void CollectStar()
+    {
+        if (IsDead) return;
+        OnCollectStar?.Invoke();
     }
 
     #endregion

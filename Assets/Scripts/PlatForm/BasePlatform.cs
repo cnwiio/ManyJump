@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class BasePlatform : MonoBehaviour, IPoolable
 {
+    private float playerOffset = 1f;
     protected void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Destroyer"))
@@ -11,7 +12,7 @@ public class BasePlatform : MonoBehaviour, IPoolable
         }
 
         if (collision.gameObject.CompareTag("Player") &&
-            collision.gameObject.transform.position.y - 1 > transform.position.y)
+            collision.gameObject.transform.position.y - playerOffset > transform.position.y)
         {
             Bounce();
         }

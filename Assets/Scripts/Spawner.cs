@@ -77,14 +77,17 @@ public class Spawner : MonoBehaviour
     {
         if (_hasAddedMonAndPower) return;
         _presetLists.AddRange(_MonAndPowerPresetLists);
-        Debug.Log(_presetLists.Count);
+        //Debug.Log(_presetLists.Count);
     }
     #endregion
     private void Restart()
     {
         previousHeight = 0;
-        _presetLists.RemoveRange(_presetLists.Count - _MonAndPowerPresetLists.Length, _MonAndPowerPresetLists.Length);
-        _hasAddedMonAndPower = false;
+        if (_hasAddedMonAndPower)
+        {
+            _presetLists.RemoveRange(_presetLists.Count - _MonAndPowerPresetLists.Length, _MonAndPowerPresetLists.Length);
+            _hasAddedMonAndPower = false;
+        }
         StartSpawn();
     }
     private void OnDestroy()

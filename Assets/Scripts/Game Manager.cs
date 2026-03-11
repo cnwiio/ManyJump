@@ -1,5 +1,6 @@
 using System;
 using Lean.Pool;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class GameManager : MonoBehaviour
     public event Action RestartEvent;
 
     [SerializeField] private GameObject RestartCanvas;
+
+    //[SerializeField] private ScoreManager scoreManager;
 
     private void Awake()
     {
@@ -55,5 +58,4 @@ public class GameManager : MonoBehaviour
     {
         PlayerScripts.Instance.OnDeath -= Lose;
     }
-
 }
