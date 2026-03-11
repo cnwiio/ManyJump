@@ -179,5 +179,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbee162a7feb61546a0195c7102fdbe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PingPongPlatform
-  speed: 1
+  speed: 3
   offset: 1
