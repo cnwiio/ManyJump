@@ -3,17 +3,21 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
     public event Action RestartEvent;
     public event Action WinEvent;
 
+
     [SerializeField] private GameObject RestartCanvas;
     [SerializeField] private GameObject WinCanvas;
+    [SerializeField] private GameObject PauseCanvas;
 
-    //[SerializeField] private ScoreManager scoreManager;
+    private bool isPaused;
 
     private void Awake()
     {
@@ -40,7 +44,7 @@ public class GameManager : MonoBehaviour
     {
         //if(PlayerScripts.Instance.transform.position.y < LoseYpos)
         //{
-            
+
         //}
     }
 
@@ -58,11 +62,17 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        AudioManager.Instance.PlayClick();
+
+        Time.timeScale = 1f;
+        isPaused = false;
+
         LeanPool.DespawnAll();
         PlayerScripts.Instance.Restart();
         RestartEvent?.Invoke();
 
         RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
     }
 
     int currentStage = 1;
@@ -83,6 +93,36 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("CurrentStage", nxtStage);
         }
+    }
+
+    public void PauseGame()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = true;
+        Time.timeScale = 0f;
+        PauseCanvas.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = false;
+        Time.timeScale = 1f;
+        RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
+    }
+    public void Home()
+    {
+        AudioManager.Instance.PlayClick();
+
+        isPaused = false;
+        Time.timeScale = 1f;
+        RestartCanvas.SetActive(false);
+        PauseCanvas.SetActive(false);
+
+        FindObjectOfType<SceneManagement>().LoadLevel(0);
     }
 
     private void OnDestroy()

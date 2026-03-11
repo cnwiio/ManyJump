@@ -21,6 +21,16 @@ public class PlayerScripts : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip equitSound;
+    [SerializeField] private AudioClip collectStarSound;
+
+    [Header("Power")]
+    [SerializeField] private float invincibleAfterHit = 3f;
+    [SerializeField] private float flashInterval = 0.15f;
+    private bool isInvincible = false;
+    private Coroutine shieldRoutine;
+
+    private SpriteRenderer sprite;
 
     private float dir;
 
@@ -70,6 +80,7 @@ public class PlayerScripts : MonoBehaviour
 
     void Start()
     {
+        sprite = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
@@ -177,6 +188,7 @@ public class PlayerScripts : MonoBehaviour
 
         if (transform.position.y < loseYPos)
         {
+            Debug.Log("You Lose!");
             AudioManager.Instance.PlaySFX(deathSound);
             Die();
         }
@@ -207,6 +219,22 @@ public class PlayerScripts : MonoBehaviour
 
     #region PowerUp
 
+    IEnumerator InvincibleCoroutine(float duration)
+    {
+        isInvincible = true;
+
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            sprite.enabled = !sprite.enabled;
+            yield return new WaitForSeconds(flashInterval);
+            timer += flashInterval;
+        }
+
+        sprite.enabled = true;
+        isInvincible = false;
+    }
 
     public void ApplyFly(float flyDuration, float flySpeed)
     {
@@ -214,6 +242,7 @@ public class PlayerScripts : MonoBehaviour
         if (IsHavePowerUp()) return;
         isFlying = true;
         StartCoroutine(FlyCouroutine(flyDuration, flySpeed));
+        AudioManager.Instance.PlaySFX(equitSound);
     }
 
     private IEnumerator FlyCouroutine(float duration, float speed)
@@ -227,16 +256,26 @@ public class PlayerScripts : MonoBehaviour
     }
 
     public void ApplyShield(float duration)
-    {
         if (IsDeadOrWin()) return;
         if (IsHavePowerUp()) return;
+        if (IsDead) return;
         hasShield = true;
-        StartCoroutine(ShieldCoroutine(duration)); 
+
+        shieldRoutine = StartCoroutine(ShieldCoroutine(duration));
+
+        AudioManager.Instance.PlaySFX(equitSound);
     }
 
     private IEnumerator ShieldCoroutine(float duration)
     {
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(duration - 1f);
+
+        for (int i = 0; i < 6; i++)
+        {
+            shieldVisual.SetActive(!shieldVisual.activeSelf);
+            yield return new WaitForSeconds(0.15f);
+        }
+
         hasShield = false;
     }
 
@@ -259,23 +298,35 @@ public class PlayerScripts : MonoBehaviour
 
     #region Die
     public void Die()
-    {
+        AudioManager.Instance.PlaySFX(deathSound);
         isDead = true;
+        IsDead = true;
         OnDeath?.Invoke();
     }
 
     public void HitEnemy()
-    {
+        if (isInvincible) return;
+
         if (IsDeadOrWin()) return;
         if (isFlying || isSuperJump) return;
+    {
         if (hasShield)
         {
             hasShield = false;
+
+            if (shieldRoutine != null)
+            {
+                StopCoroutine(shieldRoutine);
+            }
+
+            shieldVisual.SetActive(false);
+
+            StartCoroutine(InvincibleCoroutine(invincibleAfterHit));
             return;
         }
+
         Die();
     }
-
     public void Restart()
     {
         isDead = false;
