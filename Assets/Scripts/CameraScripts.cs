@@ -9,19 +9,32 @@ public class CameraScripts : MonoBehaviour
     [Header("Camera Settings")]
     [SerializeField] private float DeadScreenYOffset;
     [SerializeField] private float Speed;
+    [Tooltip("ความกว้างของฉากที่คุณต้องการให้ผู้เล่นมองเห็นได้เสมอ (World Units)")]
+    [SerializeField] private float sceneWidth = 10f; // สมมติว่าฉากกว้าง 10 unit
 
+    private Camera _camera;
+    private BoxCollider2D col;
+    private Vector3 camBottom;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         targetTransform = PlayerScripts.Instance.transform;
         yHightestPos = targetTransform.position.y;
         transform.position = new Vector3(transform.position.x, yHightestPos, transform.position.z);
+        _camera = GetComponent<Camera>();
+        col = GetComponent<BoxCollider2D>();
+        AdjustCameraSize();
+        camBottom = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
+        //Debug.Log(camBottom.y);
+
         GameManager.Instance.RestartEvent += Restart;
     }
 
     // Update is called once per frame
     void Update()
     {
+        AdjustCameraSize();
+
         FollowTarget();
     }
 
@@ -50,7 +63,9 @@ public class CameraScripts : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            if (isMoveDown) return;
             StartMoveDown();
+            GameManager.Instance.Lose();
         }
     }
 
@@ -60,11 +75,23 @@ public class CameraScripts : MonoBehaviour
     }
 
     private Vector3 loseScreenPos;
+    private float loseY;
+    [SerializeField] private float limitScreenPoint;
     private void MoveDown()
     {
         if (!isMoveDown) return;
 
-        loseScreenPos = new Vector3(transform.position.x, yHightestPos - DeadScreenYOffset, transform.position.z);
+        if (yHightestPos - DeadScreenYOffset < limitScreenPoint)
+        {
+            limitScreenPoint = -14 - camBottom.y;
+            loseY = limitScreenPoint;
+        }
+        else
+        {
+            loseY = yHightestPos - DeadScreenYOffset;
+        }
+
+        loseScreenPos = new Vector3(transform.position.x, loseY, transform.position.z);
 
         // Smoothly interpolate towards the target. 
         // Note: It's best practice to multiply Speed by Time.deltaTime here for frame-rate independence.
@@ -85,6 +112,30 @@ public class CameraScripts : MonoBehaviour
         isMoveDown = false;
         yHightestPos = targetTransform.position.y;
         transform.position = new Vector3(transform.position.x, yHightestPos, transform.position.z);
+    }
+
+    /// <summary>
+    /// คำนวณและปรับ Orthographic Size ของกล้องเพื่อให้ครอบคลุมความกว้างของฉากที่กำหนด
+    /// </summary>
+    private void AdjustCameraSize()
+    {
+        // สูตรการคำนวณ:
+        // Orthographic Size = ความสูงของหน้าจอ / 2 (ใน World Units)
+        // Aspect Ratio = ความกว้างของหน้าจอ / ความสูงของหน้าจอ
+        // ดังนั้น, Orthographic Size = (ความกว้างของหน้าจอ / Aspect Ratio) / 2
+
+        float currentAspectRatio = (float)Screen.width / Screen.height;
+
+        // เป้าหมายของเราคือให้ความกว้างของหน้าจอ (Screen Width) มีขนาดเท่ากับ sceneWidth
+        float desiredHalfWidth = sceneWidth / 2f;
+
+        // ปรับ Orthographic Size:
+        // Ortho Size = Half Width / Aspect Ratio
+        float targetOrthoSize = desiredHalfWidth / currentAspectRatio;
+
+        // กำหนดค่า Size ให้กับกล้อง
+        _camera.orthographicSize = targetOrthoSize;
+        col.offset = new Vector2(0, -_camera.orthographicSize - 1.5f);
     }
 
     private void OnDestroy()

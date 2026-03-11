@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
 
     public void Lose()
     {
+        PlayerScripts.Instance.Die();
         RestartCanvas.SetActive(true);
     }
 
@@ -122,7 +123,7 @@ public class GameManager : MonoBehaviour
         RestartCanvas.SetActive(false);
         PauseCanvas.SetActive(false);
 
-        FindObjectOfType<SceneManagement>().LoadLevel(0);
+        //FindObjectOfType<SceneManagement>().LoadLevel(0);
     }
 
     private void OnDestroy()

@@ -36,16 +36,18 @@ public class PlayerScripts : MonoBehaviour
     private Vector3 leftSide;
     private Vector3 rightSide;
 
-    private float loseOffset = 10f;
+    [SerializeField] private float loseOffset = 10f;
     private float loseYPos;
 
     private bool isDead;
     private bool isWin;
     public event Action OnDeath;
 
-    public bool isFlying = false;
+    private bool isFlying = false;
     private bool isSuperJump = false;
+    private bool isJumpPower = false;
     private float initialGravityScale;
+    private float initialJumpForce;
     private bool _hasShield = false;
     public bool hasShield
     {
@@ -86,6 +88,7 @@ public class PlayerScripts : MonoBehaviour
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
         loseYPos = transform.position.y - loseOffset;
         initialGravityScale = rb.gravityScale;
+        initialJumpForce = jumpForce;
     }
     
     // Update is called once per frame
@@ -101,7 +104,7 @@ public class PlayerScripts : MonoBehaviour
     {
         ClampFallSpeed();
         HorizontalMove();
-        CheckFall();
+        //CheckFall();
         CheckSuperJump();
     }
 
@@ -184,23 +187,6 @@ public class PlayerScripts : MonoBehaviour
 
     #endregion
 
-    private void CheckFall()
-    {
-        if (IsDeadOrWin()) return;
-
-        if (transform.position.y < loseYPos)
-        {
-            Debug.Log("You Lose!");
-            AudioManager.Instance.PlaySFX(deathSound);
-            Die();
-        }
-
-        if (rb.linearVelocityY > 0)
-        {
-            loseYPos = transform.position.y - loseOffset;
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (IsDeadOrWin()) return;
@@ -243,6 +229,8 @@ public class PlayerScripts : MonoBehaviour
         if (IsHavePowerUp()) return;
         isFlying = true;
         StartCoroutine(FlyCouroutine(flyDuration, flySpeed));
+
+        animator.SetTrigger("Fly");
         AudioManager.Instance.PlaySFX(equitSound);
     }
 
@@ -252,6 +240,7 @@ public class PlayerScripts : MonoBehaviour
         rb.gravityScale = 0f;
         rb.linearVelocityY = speed;
         yield return new WaitForSeconds(duration);
+        animator.SetTrigger("Reset");
         rb.gravityScale = initialGravityScale;
         isFlying = false;
     }
@@ -260,6 +249,7 @@ public class PlayerScripts : MonoBehaviour
     { 
         if (IsDeadOrWin()) return;
         if (IsHavePowerUp()) return;
+        if (hasShield) return;
         hasShield = true;
 
         shieldRoutine = StartCoroutine(ShieldCoroutine(duration));
@@ -280,9 +270,30 @@ public class PlayerScripts : MonoBehaviour
         hasShield = false;
     }
 
+    public void ApplyJumpPower(float duration, float multiply)
+    {
+        if (IsDeadOrWin()) return;
+        if (IsHavePowerUp()) return;
+
+        isJumpPower = true;
+        StartCoroutine(JumpPowerCoroutine(duration, multiply));
+
+        animator.SetTrigger("JumpPower");
+        AudioManager.Instance.PlaySFX(equitSound);
+    }
+
+    private IEnumerator JumpPowerCoroutine(float duration, float multiply)
+    {
+        jumpForce *= multiply;
+        yield return new WaitForSeconds(duration);
+        animator.SetTrigger("Reset");
+        isJumpPower = false;
+        jumpForce = initialJumpForce;
+    }
+
     public bool IsHavePowerUp()
     {
-        return hasShield || isSuperJump || isFlying;
+        return isSuperJump || isFlying || isJumpPower;
     }
 
     #endregion
@@ -301,6 +312,8 @@ public class PlayerScripts : MonoBehaviour
     #region Die
     public void Die()
     { 
+        if (IsDeadOrWin()) return;
+
         AudioManager.Instance.PlaySFX(deathSound);
         isDead = true;
         OnDeath?.Invoke();
@@ -336,6 +349,7 @@ public class PlayerScripts : MonoBehaviour
         isWin = false;
         isSuperJump = false;
         hasShield = false;
+        isJumpPower = false;
         transform.position = Vector3.zero;
         rb.linearVelocity = Vector2.zero;
         loseYPos = transform.position.y - loseOffset;

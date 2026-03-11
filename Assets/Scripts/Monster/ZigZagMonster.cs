@@ -3,6 +3,7 @@ using UnityEngine;
 public class ZigZagMonster : BaseMonster
 {
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
     private float dir = 1f;
     [SerializeField] private float speed = 1f;
     [SerializeField] private float offset = 1f;
@@ -16,6 +17,7 @@ public class ZigZagMonster : BaseMonster
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         leftSide = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, 0f));
         rightSide = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, 0f));
         limitLeftSide = transform.position.x - moveRange;
@@ -37,11 +39,13 @@ public class ZigZagMonster : BaseMonster
         if (rb.position.x - offset < leftSide.x || rb.position.x < limitLeftSide)
         {
             dir = 1f;
+            spriteRenderer.flipX = true;
         }
 
         if (rb.position.x + offset > rightSide.x || rb.position.x > limitRightSide)
         {
             dir = -1f;
+            spriteRenderer.flipX = false;
         }
     }
 }

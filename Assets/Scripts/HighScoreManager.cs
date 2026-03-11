@@ -72,7 +72,7 @@ public class HighScoreManager : MonoBehaviour
         {
             if (i + 1 > currentLvl)
             {
-                Debug.Log((i + 1) + " is lessthan" + currentLvl);
+                //Debug.Log((i + 1) + " is lessthan" + currentLvl);
                 levelButton[i].interactable = false;
             }
         }

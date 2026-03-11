@@ -13,8 +13,8 @@ public abstract class BasePowerUp : MonoBehaviour, IPoolable
         if (collision.CompareTag("Player"))
         {
             if (PlayerScripts.Instance.IsHavePowerUp()) return;
-            ApplyPowerUp();
             Die();
+            ApplyPowerUp();
         }
     }
 

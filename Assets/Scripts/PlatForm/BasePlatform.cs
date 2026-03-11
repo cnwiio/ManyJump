@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BasePlatform : MonoBehaviour, IPoolable
 {
-    private float playerOffset = 1f;
+    private float playerOffset = 1.15f;
     protected void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Destroyer"))
