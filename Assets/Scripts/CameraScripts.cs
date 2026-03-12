@@ -33,7 +33,7 @@ public class CameraScripts : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AdjustCameraSize();
+        //AdjustCameraSize();
 
         FollowTarget();
     }
@@ -63,6 +63,7 @@ public class CameraScripts : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            if (PlayerScripts.Instance.IsDeadOrWin()) return;
             if (isMoveDown) return;
             StartMoveDown();
             GameManager.Instance.Lose();

@@ -180,4 +180,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PingPongPlatform
   speed: 3
-  offset: 1
+  offset: 1.3

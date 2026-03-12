@@ -76,8 +76,6 @@ public class ScoreManager : MonoBehaviour
     private void StopCounter()
     {
         isRunning = false;
-        SaveTimeScore();
-        SaveStarScore();
     }
 
     private void CompleteStage()
