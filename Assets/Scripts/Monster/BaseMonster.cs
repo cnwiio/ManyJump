@@ -1,11 +1,10 @@
 using Lean.Pool;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class BaseMonster : MonoBehaviour, IPoolable
 {
-    [SerializeField] private AnimatorController[] variantsAnimatorList;
-    [SerializeField] private AnimatorController[] SpaceAnimatorList;
+    [SerializeField] private RuntimeAnimatorController[] variantsAnimatorList;
+    [SerializeField] private RuntimeAnimatorController[] SpaceAnimatorList;
     private Animator animator;
     private int TargetSpace = 40;
     private bool onSpace;
