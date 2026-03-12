@@ -1789,6 +1789,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: _difficultyChangeTargetY
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_presetLists.Array.data[0]'
       value: 
       objectReference: {fileID: 4616827233108123107, guid: 195982432f0857a4a82bdd98da731c2c, type: 3}
@@ -1809,6 +1813,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: _monAndPowerPresetLists.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_MonAndPowerPresetLists.Array.data[0]'
       value: 
       objectReference: {fileID: 4994265689082507146, guid: 3359ba3a10d915a449af79d7df9f76c3, type: 3}
@@ -1818,6 +1826,18 @@ PrefabInstance:
       objectReference: {fileID: -3721911208932563772, guid: eb1a004079c80e04e9ccff77c811be22, type: 3}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_MonAndPowerPresetLists.Array.data[2]'
+      value: 
+      objectReference: {fileID: 7873218299590662645, guid: 6d4d74b2f43d03748a422d4866df7732, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4994265689082507146, guid: 3359ba3a10d915a449af79d7df9f76c3, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[1]'
+      value: 
+      objectReference: {fileID: -3721911208932563772, guid: eb1a004079c80e04e9ccff77c811be22, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[2]'
       value: 
       objectReference: {fileID: 7873218299590662645, guid: 6d4d74b2f43d03748a422d4866df7732, type: 3}
     - target: {fileID: 3172684330865041560, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
@@ -1883,7 +1903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5781835477526451094, guid: ad2311f7b4143a54281b260279de8689, type: 3}
       propertyPath: pc
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8274317425479154790, guid: ad2311f7b4143a54281b260279de8689, type: 3}
       propertyPath: m_Name

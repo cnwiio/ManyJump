@@ -1351,6 +1351,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: _difficultyChangeTargetY
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_presetLists.Array.data[0]'
       value: 
       objectReference: {fileID: 8814741245880905015, guid: 85fa6c38afb763e40ada3d1569491084, type: 3}
@@ -1367,6 +1371,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: _monAndPowerPresetLists.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_MonAndPowerPresetLists.Array.data[0]'
       value: 
       objectReference: {fileID: 6658601984509382387, guid: 0cdac5136397788479ae2b3bbf0c5a61, type: 3}
@@ -1376,6 +1384,18 @@ PrefabInstance:
       objectReference: {fileID: 4893454463801664563, guid: 9d492de8b1f647840963f7e47a32a0e8, type: 3}
     - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
       propertyPath: '_MonAndPowerPresetLists.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8321508844911373865, guid: 69ce914f8c9235f41b73eb42c6894680, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6658601984509382387, guid: 0cdac5136397788479ae2b3bbf0c5a61, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[1]'
+      value: 
+      objectReference: {fileID: 4893454463801664563, guid: 9d492de8b1f647840963f7e47a32a0e8, type: 3}
+    - target: {fileID: 2494763344260698069, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}
+      propertyPath: '_monAndPowerPresetLists.Array.data[2]'
       value: 
       objectReference: {fileID: 8321508844911373865, guid: 69ce914f8c9235f41b73eb42c6894680, type: 3}
     - target: {fileID: 3172684330865041560, guid: 1d98b7acb94f63e4ca8d7673ddcff8f0, type: 3}

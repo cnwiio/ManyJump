@@ -1,92 +1,111 @@
 using System.Collections.Generic;
 using Lean.Pool;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public sealed class Spawner : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] private List<Preset> _presetLists;
-    [SerializeField] private Preset[] _MonAndPowerPresetLists;
+    [SerializeField] private Preset[] _monAndPowerPresetLists;
+    [SerializeField] private float _difficultyChangeTargetY;
+
+    [Header("Spawn Distance")]
+    [Tooltip("ระยะห่างจากตัวผู้เล่นที่เริ่มจะ Spawn ชิ้นใหม่ (ควรมากกว่าความสูงหน้าจอ)")]
+    [SerializeField] private float _spawnAheadDistance = 15f;
+
     private GameObject _player;
-    private float Targety;
-    [SerializeField] private float diffucultChangeTargetY;
+    private float _targetY;
     private bool _hasAddedMonAndPower = false;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    private void Start()
     {
-        _player = PlayerScripts.Instance.gameObject;
-        GameManager.Instance.RestartEvent += Restart;
+        if (PlayerScripts.Instance != null)
+            _player = PlayerScripts.Instance.gameObject;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.RestartEvent += Restart;
+
         StartSpawn();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (_player.transform.position.y > Targety)
+        if (_player == null) return;
+
+        // --- จุดสำคัญ: ตรวจสอบระยะห่างแทนการรอให้ถึงจุด ---
+        // ถ้าตำแหน่ง Y ของผู้เล่น + ระยะที่กำหนด มากกว่าจุดสิ้นสุดของ Preset ล่าสุด
+        // ให้ทำการ Spawn เพิ่มล่วงหน้าทันที
+        if (_player.transform.position.y + _spawnAheadDistance > _targetY)
         {
             Spawn();
-            
         }
 
-        if (_player.transform.position.y > diffucultChangeTargetY && !_hasAddedMonAndPower)
+        // ส่วนของการเพิ่มความยากยังคงเดิม
+        if (_player.transform.position.y > _difficultyChangeTargetY && !_hasAddedMonAndPower)
         {
             AddMonAndPowerPresets();
-            _hasAddedMonAndPower = true;
         }
     }
 
-    #region Spawn
-    private Vector3 RandomPos;
-    private int randomIndex;
-    private int previousHeight = 0;
-    void Spawn()
+    private void Spawn()
     {
-        randomIndex = Random.Range(0, _presetLists.Count);
-        //Debug.Log(randomIndex);
-        RandomPos = new Vector3(/*Random.Range(-2f, 2f)*/0f, Targety + previousHeight, 0f);
+        if (_presetLists == null || _presetLists.Count == 0) return;
 
-        //Debug.Log("Currect i : " + i + 
-        //    "\nChild Type : " + _presetLists[randomIndex].ChildType.Length +
-        //    "\nChildPos : " + _presetLists[randomIndex].ChildPos.Length + 
-        //    "\nChild Cout : " + _presetLists[randomIndex].transform.childCount);
-        for (int i = 0; i < _presetLists[randomIndex].transform.childCount; i++)
+        int randomIndex = Random.Range(0, _presetLists.Count);
+        Preset selectedPreset = _presetLists[randomIndex];
+
+        // วางที่จุด _targetY ปัจจุบัน
+        Vector3 spawnBasePos = new Vector3(0f, _targetY, 0f);
+
+        for (int i = 0; i < selectedPreset.transform.childCount; i++)
         {
-            LeanPool.Spawn(_presetLists[randomIndex].ChildType[i],
-                _presetLists[randomIndex].ChildPos[i].localPosition + RandomPos,
-                Quaternion.identity);
+            if (i < selectedPreset.ChildType.Length && i < selectedPreset.ChildPos.Length)
+            {
+                LeanPool.Spawn(selectedPreset.ChildType[i],
+                    selectedPreset.ChildPos[i].localPosition + spawnBasePos,
+                    Quaternion.identity);
+            }
         }
 
-        previousHeight = (int)_presetLists[randomIndex].Hieght;
-        Targety += _presetLists[randomIndex].Hieght;
+        // เลื่อนจุด Target ไปที่ส่วนหัวของ Preset ที่เพิ่งวางเสร็จ
+        _targetY += selectedPreset.Hieght;
     }
 
-    void StartSpawn()
+    private void StartSpawn()
     {
-        Targety = -10;
-        Spawn();
-        Targety = -10;
-        Spawn();
+        // เริ่มต้นจากจุดที่ต่ำกว่าผู้เล่นเล็กน้อยเพื่อให้มีพื้นยืน
+        _targetY = -10f;
+
+        // Spawn ล่วงหน้าไว้สัก 3-4 ชิ้น เพื่อให้ฉากดูเต็มตั้งแต่เริ่ม
+        for (int i = 0; i < 4; i++)
+        {
+            Spawn();
+        }
     }
 
-    void AddMonAndPowerPresets()
+    private void AddMonAndPowerPresets()
     {
         if (_hasAddedMonAndPower) return;
-        _presetLists.AddRange(_MonAndPowerPresetLists);
-        //Debug.Log(_presetLists.Count);
+        _presetLists.AddRange(_monAndPowerPresetLists);
+        _hasAddedMonAndPower = true;
     }
-    #endregion
+
     private void Restart()
     {
-        previousHeight = 0;
         if (_hasAddedMonAndPower)
         {
-            _presetLists.RemoveRange(_presetLists.Count - _MonAndPowerPresetLists.Length, _MonAndPowerPresetLists.Length);
+            foreach (var item in _monAndPowerPresetLists)
+            {
+                _presetLists.Remove(item);
+            }
             _hasAddedMonAndPower = false;
         }
         StartSpawn();
     }
+
     private void OnDestroy()
     {
-        GameManager.Instance.RestartEvent -= Restart;
+        if (GameManager.Instance != null)
+            GameManager.Instance.RestartEvent -= Restart;
     }
 }
