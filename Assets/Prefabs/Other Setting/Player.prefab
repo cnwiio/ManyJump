@@ -213,7 +213,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -285,11 +285,11 @@ MonoBehaviour:
   pc: 1
   jumpSound: {fileID: 8300000, guid: de95d6633ae7a1246b3624e52a950232, type: 3}
   deathSound: {fileID: 8300000, guid: 6efec5c835a18004fb2250839ac1adeb, type: 3}
-  equitSound: {fileID: 0}
-  collectStarSound: {fileID: 0}
+  equitSound: {fileID: 8300000, guid: 0996c2ac9b497344a9fd472e5ef2852c, type: 3}
+  collectStarSound: {fileID: 8300000, guid: eccb185e71790c94f8a6c874d8f4ed93, type: 3}
   invincibleAfterHit: 3
   flashInterval: 0.15
-  isFlying: 0
+  loseOffset: 11
   shieldVisual: {fileID: 725590845527219575}
 --- !u!212 &4925460439814961649
 SpriteRenderer:

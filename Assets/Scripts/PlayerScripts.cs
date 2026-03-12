@@ -11,6 +11,7 @@ public class PlayerScripts : MonoBehaviour
 
     public static PlayerScripts Instance { get; private set; }
     private Rigidbody2D rb;
+    public bool IsFalling => rb.linearVelocityY < 0;
     [Header("Player Stats")]
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float horizontalSpeed = 2f;

@@ -83,8 +83,7 @@ public class CameraScripts : MonoBehaviour
 
         if (yHightestPos - DeadScreenYOffset < limitScreenPoint)
         {
-            limitScreenPoint = -14 - camBottom.y;
-            loseY = limitScreenPoint;
+            loseY = limitScreenPoint - camBottom.y;
         }
         else
         {
@@ -135,7 +134,7 @@ public class CameraScripts : MonoBehaviour
 
         // กำหนดค่า Size ให้กับกล้อง
         _camera.orthographicSize = targetOrthoSize;
-        col.offset = new Vector2(0, -_camera.orthographicSize - 1.5f);
+        col.offset = new Vector2(0, -_camera.orthographicSize - 0.5f);
     }
 
     private void OnDestroy()
