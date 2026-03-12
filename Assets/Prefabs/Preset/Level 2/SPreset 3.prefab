@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 211651090410933914}
   - component: {fileID: 6658601984509382387}
   m_Layer: 0
-  m_Name: SPreset 4
+  m_Name: SPreset 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
