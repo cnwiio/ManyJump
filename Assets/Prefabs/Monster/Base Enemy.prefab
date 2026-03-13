@@ -51,7 +51,6 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 1fe62c4897d39104baa352a3899473a1, type: 2}
   SpaceAnimatorList:
   - {fileID: 9100000, guid: 06ee1084b3293f44db3012fa3541a12b, type: 2}
-  TargetSpace: 40
 --- !u!212 &5020249477101910004
 SpriteRenderer:
   serializedVersion: 2
